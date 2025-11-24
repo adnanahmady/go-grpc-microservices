@@ -1,0 +1,54 @@
+syntax = "proto3";
+
+package proto;
+
+option go_package = "github.com/adnanahmady/go-grpc-microservices/pkg/proto";
+
+// --- User Service ---
+
+message User {
+    string id = 1;
+    string name = 2;
+}
+
+message GetUserRequest {
+    string id = 1;
+}
+
+service UserService {
+    rpc GetUser(GetUserRequest) returns (User);
+}
+
+// --- Inventory Service ---
+
+message Product {
+    string id = 1;
+    string name = 2;
+    int32 quantity = 3;
+}
+
+message GetProductRequest {
+    string id = 1;
+}
+
+service InventoryService {
+    rpc GetProduct(GetProductRequest) returns (Product);
+}
+
+// --- Order Service ---
+
+message Order {
+    string id = 1;
+    string userId = 2;
+    string productId = 3;
+    string status = 4;
+}
+
+message CreateOrderRequest {
+    string userId = 1;
+    string productId = 2;
+}
+
+service OrderService {
+    rpc CreateOrder(CreateOrderRequest) returns (Order);
+}
