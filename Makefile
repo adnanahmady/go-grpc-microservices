@@ -14,6 +14,9 @@ donw:
 ps:
 	@docker compose ps
 
+log:
+	@docker compose logs -f $(call default,$(service),app)
+
 shell:
 	@docker compose exec $(call default,$(service),app) $(call default,$(run),bash)
 

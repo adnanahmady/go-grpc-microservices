@@ -7,14 +7,20 @@
 package internal
 
 import (
+	"github.com/adnanahmady/go-grpc-microservices/config"
 	"github.com/adnanahmady/go-grpc-microservices/internal/user"
+	"github.com/adnanahmady/go-grpc-microservices/pkg/applog"
 )
 
 // Injectors from wire.go:
 
 func InitializeUserService() (*UserService, error) {
+	configConfig := config.GetConfig()
+	appLogger := applog.NewAppLogger(configConfig)
 	server := user.NewServer()
 	userService := &UserService{
+		Config: configConfig,
+		Logger: appLogger,
 		Server: server,
 	}
 	return userService, nil

@@ -18,9 +18,30 @@ services:
       - "${USER_SERVICE_PORT:-5000}:5000"
       - "${INVENTORY_SERVICE_PORT:-5001}:5001"
       - "${ORDER_SERVICE_PORT:-5002}:5002"
+  
+  user-service:
+    build:
+      context: .
+      dockerfile: .docker/prod.Dockerfile
+      args:
+        SERVICE_NAME: userservice
+    env_file:
+      - .env
+    ports:
+      - "${USER_SERVICE_PORT:-50051}:${USER_SERVICE_PORT:-50051}"
+    environment:
+      - USER_HOST=${USER_SERVICE_HOST:-}
+      - USER_PORT=${USER_SERVICE_PORT:-50051}
+    networks:
+      - microservices
+    restart: always
 
   adminer:
     image: adminer:4.8.1
     restart: always
     ports:
       - "${ADMINER_PORT:-8080}:8080"
+
+networks:
+  microservices:
+    driver: bridge

@@ -1,0 +1,14 @@
+app:
+  env: local # local, development, production
+
+user:
+  host: # host to connect to user service
+  port: 5001 # port to connect to user service
+
+log:
+  level: debug # debug, info, warning, error, fatal, panic
+  dir: logs # directory to store logs
+  write_to_file: true # write logs to file
+  compress_log_files: false # compress log files
+  max_age: 7 # days
+  max_size: 100 # MB
