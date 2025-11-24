@@ -10,6 +10,7 @@ import (
 	"github.com/adnanahmady/go-grpc-microservices/config"
 	"github.com/adnanahmady/go-grpc-microservices/internal/user"
 	"github.com/adnanahmady/go-grpc-microservices/pkg/applog"
+	"github.com/adnanahmady/go-grpc-microservices/pkg/request"
 )
 
 // Injectors from wire.go:
@@ -18,10 +19,12 @@ func InitializeUserService() (*UserService, error) {
 	configConfig := config.GetConfig()
 	appLogger := applog.NewAppLogger(configConfig)
 	server := user.NewServer()
+	middlewares := request.NewMiddlewares(appLogger, configConfig)
 	userService := &UserService{
-		Config: configConfig,
-		Logger: appLogger,
-		Server: server,
+		Config:      configConfig,
+		Logger:      appLogger,
+		Server:      server,
+		Middlewares: middlewares,
 	}
 	return userService, nil
 }

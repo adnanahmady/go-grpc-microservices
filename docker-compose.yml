@@ -15,9 +15,9 @@ services:
     image: app:latest
     <<: *app_service
     ports:
-      - "${USER_SERVICE_PORT:-5000}:5000"
-      - "${INVENTORY_SERVICE_PORT:-5001}:5001"
-      - "${ORDER_SERVICE_PORT:-5002}:5002"
+      - "${USER_PORT:-5000}:${USER_PORT:-5000}"
+      - "${INVENTORY_PORT:-5001}:${INVENTORY_PORT:-5001}"
+      - "${ORDER_PORT:-5002}:${ORDER_PORT:-5002}"
   
   user-service:
     build:

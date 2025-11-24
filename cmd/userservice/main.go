@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"log"
 	"net"
+	"os"
 	"os/signal"
 	"sync"
 	"syscall"
@@ -35,7 +36,9 @@ func main() {
 		return
 	}
 
-	s := grpc.NewServer()
+	s := grpc.NewServer(
+		grpc.UnaryInterceptor(userService.Middlewares.UnaryServerLoggingInterceptor()),
+	)
 	proto.RegisterUserServiceServer(s, userService.Server)
 
 	wg.Add(1)
@@ -44,7 +47,7 @@ func main() {
 		lgr.Info("User service is running on %s", host)
 		if err := s.Serve(listener); err != nil {
 			lgr.Error("failed to serve", err)
-			return
+			os.Exit(1)
 		}
 		lgr.Info("grpc server is stopped")
 	}()

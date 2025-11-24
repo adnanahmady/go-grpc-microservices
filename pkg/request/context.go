@@ -2,10 +2,13 @@ package request
 
 import (
 	"context"
+
+	"github.com/adnanahmady/go-grpc-microservices/pkg/applog"
 )
 
 var (
 	ctxTraceIDKey = &struct{uint8}{}
+	ctxLoggerKey = &struct{uint8}{}
 )
 
 func WithTraceID(ctx context.Context, traceID string) context.Context {
@@ -17,4 +20,12 @@ func GetTraceID(ctx context.Context) string {
 		return traceID
 	}
 	return "anonymouse"
+}
+
+func WithLogger(ctx context.Context, lgr applog.Logger) context.Context {
+	return context.WithValue(ctx, ctxLoggerKey, lgr)
+}
+
+func GetLogger(ctx context.Context) applog.Logger {
+	return ctx.Value(ctxLoggerKey).(applog.Logger)
 }

@@ -14,6 +14,9 @@ donw:
 ps:
 	@docker compose ps
 
+run.user: tidy wire
+	@${MAKE} shell run="go run ./cmd/userservice/main.go"
+
 log:
 	@docker compose logs -f $(call default,$(service),app)
 
@@ -21,21 +24,21 @@ shell:
 	@docker compose exec $(call default,$(service),app) $(call default,$(run),bash)
 
 tidy:
-	@${MAKE} shell service=app run="go mod tidy"
-	@${MAKE} shell service=app run="go mod vendor"
+	@${MAKE} shell run="go mod tidy"
+	@${MAKE} shell run="go mod vendor"
 
 get:
-	@${MAKE} shell service=app run="go get $(call default,${package},${pkg})"
+	@${MAKE} shell run="go get $(call default,${package},${pkg})"
 	@${MAKE} tidy
 
 wire:
-	@${MAKE} shell service=app run="wire ./..."
+	@${MAKE} shell run="wire ./..."
 
 run-user:
-	@${MAKE} shell service=app run="go run ./cmd/userservice/main.go"
+	@${MAKE} shell run="go run ./cmd/userservice/main.go"
 
 run-inventory:
-	@${MAKE} shell service=app run="go run ./cmd/inventoryservice/main.go"
+	@${MAKE} shell run="go run ./cmd/inventoryservice/main.go"
 
 run-order:
-	@${MAKE} shell service=app run="go run ./cmd/orderservice/main.go"
+	@${MAKE} shell run="go run ./cmd/orderservice/main.go"
