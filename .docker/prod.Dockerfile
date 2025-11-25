@@ -17,6 +17,5 @@ FROM scratch
 WORKDIR /app
 
 COPY --from=builder /app/server /app
-COPY --from=builder /app/config.yaml /app
 
 CMD ["./server"]

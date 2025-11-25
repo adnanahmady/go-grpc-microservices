@@ -6,7 +6,7 @@ user:
   port: 5001 # port to connect to user service
 
 log:
-  level: debug # debug, info, warning, error, fatal, panic
+  level: info # debug, info, warning, error, fatal, panic
   dir: logs # directory to store logs
   write_to_file: true # write logs to file
   compress_log_files: false # compress log files

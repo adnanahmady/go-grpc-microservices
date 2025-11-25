@@ -1,6 +1,8 @@
 package config
 
 import (
+	"bytes"
+	"embed"
 	"errors"
 	"log"
 
@@ -37,18 +39,20 @@ func loadDotEnvFile() {
 	}
 }
 
-func readConfigFile() {
-	viper.SetConfigName("config")
-	viper.SetConfigType("yaml")
-	viper.AddConfigPath(app.GetRootDir())
+//go:embed config.yaml
+var configFile embed.FS
 
-	log.Printf("reading config file: %s", app.GetRootDir()+"/config.yaml")
-	if err := viper.ReadInConfig(); err != nil {
+func readConfigFile() {
+	fileBytes, err := configFile.ReadFile("config.yaml")
+	if err != nil {
+		log.Fatalf("failed to read embedded config file: %v", err)
+	}
+	viper.SetConfigType("yaml")
+	if err := viper.ReadConfig(bytes.NewReader(fileBytes)); err != nil {
 		if errors.Is(err, viper.ConfigFileNotFoundError{}) {
 			log.Fatalf("config file not found: %v", err)
-			return
 		}
-		log.Fatalf("failed to read config file: %v", err)
+		log.Fatalf("failed to read config from embedded file: %v", err)
 	}
 }
 
