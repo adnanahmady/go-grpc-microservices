@@ -56,8 +56,8 @@ func TestUserService_Integration(t *testing.T) {
 
 	ctx, cancel := context.WithTimeout(context.Background(), 1*time.Second)
 	defer cancel()
-	
-	t.Run("given id when user exists then should return it", func (t *testing.T)  {
+
+	t.Run("given id when user exists then should return it", func(t *testing.T) {
 		// Arrange
 		req := &proto.GetUserRequest{Id: "2"}
 
@@ -65,13 +65,13 @@ func TestUserService_Integration(t *testing.T) {
 		resp, err := client.GetUser(ctx, req)
 		require.NoError(t, err)
 		require.NotNil(t, resp)
-		
+
 		// Assert
 		assert.Equal(t, "2", resp.Id)
 		assert.NotEmpty(t, resp.Name)
 	})
-	
-	t.Run("given id when user doesnt exist then should return error", func (t *testing.T) {
+
+	t.Run("given id when user doesnt exist then should return error", func(t *testing.T) {
 		// Arrange
 		req := &proto.GetUserRequest{Id: "999"}
 

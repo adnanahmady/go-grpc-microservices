@@ -10,9 +10,9 @@ import (
 )
 
 type UserService struct {
-	Config *config.Config
-	Logger applog.Logger
-	Server *user.Server
+	Config      *config.Config
+	Logger      applog.Logger
+	Server      *user.Server
 	Middlewares *request.Middlewares
 }
 

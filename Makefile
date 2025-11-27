@@ -39,9 +39,13 @@ test:
 	@${MAKE} shell run="go clean -testcache"
 	@${MAKE} shell run="go test $(call option,${v},-v) ./..."
 t: test
-
 vt: 
 	@${MAKE} t v=1
+
+lint:
+	@${MAKE} shell run="gofmt -l -w ."
+	@${MAKE} shell run="go vet ./..."
+fix: lint
 
 wire:
 	@${MAKE} shell run="wire ./..."

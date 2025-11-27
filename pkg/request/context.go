@@ -7,8 +7,8 @@ import (
 )
 
 var (
-	ctxTraceIDKey = &struct{uint8}{}
-	ctxLoggerKey = &struct{uint8}{}
+	ctxTraceIDKey = &struct{ uint8 }{}
+	ctxLoggerKey  = &struct{ uint8 }{}
 )
 
 func WithTraceID(ctx context.Context, traceID string) context.Context {
