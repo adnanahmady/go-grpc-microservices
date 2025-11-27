@@ -2,6 +2,10 @@ define default
 $(if $(1),$(1),$(2))
 endef
 
+define option
+$(if $(1),$(2),)
+endef
+
 up:
 	@docker compose up -d
 
@@ -30,6 +34,14 @@ tidy:
 get:
 	@${MAKE} shell run="go get $(call default,${package},${pkg})"
 	@${MAKE} tidy
+
+test:
+	@${MAKE} shell run="go clean -testcache"
+	@${MAKE} shell run="go test $(call option,${v},-v) ./..."
+t: test
+
+vt: 
+	@${MAKE} t v=1
 
 wire:
 	@${MAKE} shell run="wire ./..."

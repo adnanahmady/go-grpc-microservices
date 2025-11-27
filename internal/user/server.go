@@ -35,5 +35,5 @@ func (s *Server) GetUser(
 	if user, ok := users[req.Id]; ok {
 		return user, nil
 	}
-	return nil, fmt.Errorf("user not found: %s", req.Id)
+	return nil, fmt.Errorf("%w: %v", ErrUserNotFound, req.Id)
 }
