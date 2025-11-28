@@ -1,12 +1,10 @@
 # go-grpc-microservices
 
-A demo of three Go microservices communicating via gRPC,
+A simplified demo of three Go microservices communicating via gRPC,
 implemented in ***monorepo*** code storage concept.
 
-**Caution**: the project is still under development and
-therefore you see an incomplete version of it. Currently 
-only the user service is added, but soon, other services
-and features that I have in mind will be added.
+**Caution**: the main focus of this project is the gRPC and
+communication between the tree microservices. 
 
 # Index
 
