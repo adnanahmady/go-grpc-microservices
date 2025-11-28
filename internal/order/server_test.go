@@ -17,6 +17,8 @@ import (
 var _ proto.UserServiceClient = (*spyUserClient)(nil)
 
 type spyUserClient struct {
+	LastRequestedId string
+	CallCount       int
 }
 
 // GetUser implements proto.UserServiceClient.
@@ -25,6 +27,8 @@ func (s *spyUserClient) GetUser(
 	req *proto.GetUserRequest,
 	opts ...grpc.CallOption,
 ) (*proto.User, error) {
+	s.LastRequestedId = req.Id
+	s.CallCount++
 	if req.Id == "100" {
 		return nil, fmt.Errorf("user not found")
 	}
@@ -34,6 +38,8 @@ func (s *spyUserClient) GetUser(
 var _ proto.InventoryServiceClient = (*spyInventoryClient)(nil)
 
 type spyInventoryClient struct {
+	LastRequestedId string
+	CallCount       int
 }
 
 // GetProduct implements proto.InventoryServiceClient.
@@ -42,6 +48,8 @@ func (s *spyInventoryClient) GetProduct(
 	req *proto.GetProductRequest,
 	opts ...grpc.CallOption,
 ) (*proto.Product, error) {
+	s.LastRequestedId = req.Id
+	s.CallCount++
 	if req.Id == "100" {
 		return nil, fmt.Errorf("product not found")
 	}
@@ -60,6 +68,68 @@ func TestCreateOrder_Unit(t *testing.T) {
 	server := NewServer(userClient, invClient)
 	ctx := context.Background()
 	ctx = request.WithLogger(ctx, lgr)
+
+	name := "given user id when create order requested then should only call once"
+	t.Run(name, func(t *testing.T) {
+		// Arrange
+		userClient := &spyUserClient{}
+		invClient := &spyInventoryClient{}
+		server := NewServer(userClient, invClient)
+		req := &proto.CreateOrderRequest{UserId: "3", ProductId: "2"}
+
+		// Act
+		resp, err := server.CreateOrder(ctx, req)
+		require.NoError(t, err)
+		require.NotEmpty(t, resp)
+
+		// Assert
+		assert.Equal(t, 1, userClient.CallCount)
+	})
+
+	name = "given product id when create order requested then should only call once"
+	t.Run(name, func(t *testing.T) {
+		// Arrange
+		userClient := &spyUserClient{}
+		invClient := &spyInventoryClient{}
+		server := NewServer(userClient, invClient)
+		req := &proto.CreateOrderRequest{UserId: "3", ProductId: "2"}
+
+		// Act
+		resp, err := server.CreateOrder(ctx, req)
+		require.NoError(t, err)
+		require.NotEmpty(t, resp)
+
+		// Assert
+		assert.Equal(t, 1, invClient.CallCount)
+	})
+
+	name = "given user id when create order requested then should call user service to check"
+	t.Run(name, func(t *testing.T) {
+		// Arrange
+		req := &proto.CreateOrderRequest{UserId: "3", ProductId: "2"}
+
+		// Act
+		resp, err := server.CreateOrder(ctx, req)
+		require.NoError(t, err)
+		require.NotEmpty(t, resp)
+
+		// Assert
+		assert.Equal(t, "3", userClient.LastRequestedId)
+	})
+
+	name = "given product id when create order requested then should call inventory service to check"
+	t.Run(name, func(t *testing.T) {
+		// Arrange
+		req := &proto.CreateOrderRequest{UserId: "3", ProductId: "2"}
+
+		// Act
+		resp, err := server.CreateOrder(ctx, req)
+		require.NoError(t, err)
+		require.NotEmpty(t, resp)
+
+		// Assert
+		assert.Equal(t, "2", invClient.LastRequestedId)
+	})
 
 	t.Run("given order when user doesnt exist then should return error", func(t *testing.T) {
 		// Arrange
