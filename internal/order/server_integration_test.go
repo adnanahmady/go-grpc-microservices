@@ -53,8 +53,6 @@ func setupOrderServer(t *testing.T) (context.Context, proto.OrderServiceClient) 
 func TestOrderService_Integration(t *testing.T) {
 	ctx, client := setupOrderServer(t)
 
-	lgr := request.GetLogger(ctx)
-	_ = lgr
 	t.Run("given order when user doesnt exist then should return error", func(t *testing.T) {
 		// Arrange
 		req := &proto.CreateOrderRequest{UserId: "100", ProductId: "1"}
