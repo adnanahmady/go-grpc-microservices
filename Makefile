@@ -37,7 +37,7 @@ get:
 
 test:
 	@${MAKE} shell run="go clean -testcache"
-	@${MAKE} shell run="go test $(call option,${v},-v) ./..."
+	@${MAKE} shell run="go test -timeout=10s $(call option,${v},-v) ./..."
 t: test
 vt: 
 	@${MAKE} t v=1
