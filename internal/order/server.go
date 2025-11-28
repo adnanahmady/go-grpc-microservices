@@ -68,7 +68,7 @@ func (s *Server) CreateOrder(
 		return nil, fmt.Errorf("%w: %s", ErrOrderingProductNotFound, req.ProductId)
 	}
 	if product.Quantity < 1 {
-		return nil, fmt.Errorf("product out of stock: %s", req.ProductId)
+		return nil, fmt.Errorf("%w: %s", ErrProductIsSoldOut, req.ProductId)
 	}
 
 	newOrder := &proto.Order{

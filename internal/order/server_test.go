@@ -53,11 +53,17 @@ func (s *spyInventoryClient) GetProduct(
 	if req.Id == "100" {
 		return nil, fmt.Errorf("product not found")
 	}
-	return &proto.Product{
+	p := &proto.Product{
 		Id:       req.Id,
 		Name:     "Product 10",
 		Quantity: 10,
-	}, nil
+	}
+
+	if req.Id == "99" {
+		p.Quantity = 0
+	}
+
+	return p, nil
 }
 
 func TestCreateOrder_Unit(t *testing.T) {
@@ -142,6 +148,19 @@ func TestCreateOrder_Unit(t *testing.T) {
 
 		// Assert
 		assert.ErrorIs(t, err, ErrOrderingUserNotFound)
+	})
+
+	t.Run("given order when product quantity is zero then should return error", func(t *testing.T) {
+		// Arrange
+		req := &proto.CreateOrderRequest{UserId: "1", ProductId: "99"}
+
+		// Act
+		resp, err := server.CreateOrder(ctx, req)
+		require.Error(t, err)
+		require.Empty(t, resp)
+
+		// Assert
+		assert.ErrorIs(t, err, ErrProductIsSoldOut)
 	})
 
 	t.Run("given order when product doesnt exist then should return error", func(t *testing.T) {
