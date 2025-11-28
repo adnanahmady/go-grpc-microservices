@@ -21,8 +21,11 @@ import (
 func setupTestServer(t *testing.T) proto.UserServiceClient {
 	listener := bufconn.Listen(1024 * 1024)
 	t.Cleanup(func() { listener.Close() })
+	cfg := config.GetConfig()
+	lgr := applog.NewAppLogger(cfg, "test_user")
 
-	srv := grpc.NewServer()
+	m := request.NewMiddlewares(lgr, cfg)
+	srv := grpc.NewServer(grpc.UnaryInterceptor(m.UnaryServerLoggingInterceptor()))
 	t.Cleanup(func() { srv.Stop() })
 
 	proto.RegisterUserServiceServer(srv, NewServer())
@@ -32,8 +35,6 @@ func setupTestServer(t *testing.T) proto.UserServiceClient {
 		}
 	}()
 
-	cfg := config.GetConfig()
-	lgr := applog.NewAppLogger(cfg)
 	ctx := request.WithLogger(context.Background(), lgr)
 	ctx, cancel := context.WithCancel(ctx)
 	t.Cleanup(cancel)
@@ -46,9 +47,7 @@ func setupTestServer(t *testing.T) proto.UserServiceClient {
 	require.NoError(t, err)
 	t.Cleanup(func() { conn.Close() })
 
-	client := proto.NewUserServiceClient(conn)
-
-	return client
+	return proto.NewUserServiceClient(conn)
 }
 
 func TestUserService_Integration(t *testing.T) {

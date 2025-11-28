@@ -15,9 +15,9 @@ import (
 
 // Injectors from wire.go:
 
-func InitializeUserService() (*UserService, error) {
+func InitializeUserService(serviceName string) (*UserService, error) {
 	configConfig := config.GetConfig()
-	appLogger := applog.NewAppLogger(configConfig)
+	appLogger := applog.NewAppLogger(configConfig, serviceName)
 	server := user.NewServer()
 	middlewares := request.NewMiddlewares(appLogger, configConfig)
 	userService := &UserService{

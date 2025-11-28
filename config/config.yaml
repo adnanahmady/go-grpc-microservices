@@ -1,9 +1,9 @@
 app:
   env: local # local, development, production
 
-user:
+user: # on what host and port the user service should run
   host: # host to connect to user service
-  port: 5001 # port to connect to user service
+  port: 5000 # port to connect to user service
 
 log:
   level: info # debug, info, warning, error, fatal, panic

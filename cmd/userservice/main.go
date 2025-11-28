@@ -21,7 +21,7 @@ func main() {
 	defer stop()
 	wg := sync.WaitGroup{}
 
-	userService, err := internal.InitializeUserService()
+	userService, err := internal.InitializeUserService("user")
 	if err != nil {
 		log.Fatalf("failed to initialize user service: %v", err)
 	}
@@ -32,8 +32,7 @@ func main() {
 	host := fmt.Sprintf("%s:%d", cfg.User.Host, cfg.User.Port)
 	listener, err := net.Listen("tcp", host)
 	if err != nil {
-		lgr.Fatal("failed to listen", err)
-		return
+		lgr.Fatal("failed to create listener on %s", err, host)
 	}
 
 	s := grpc.NewServer(

@@ -29,8 +29,7 @@ var _ Logger = (*AppLogger)(nil)
 type AppLogger struct {
 	lgr zerolog.Logger
 }
-
-func NewAppLogger(cfg *config.Config) *AppLogger {
+func NewAppLogger(cfg *config.Config, serviceName string) *AppLogger {
 	zerolog.TimeFieldFormat = zerolog.TimeFormatUnix
 
 	writers := getWriters(cfg)
@@ -38,7 +37,8 @@ func NewAppLogger(cfg *config.Config) *AppLogger {
 	level := getLevel(cfg)
 	zerolog.SetGlobalLevel(level)
 
-	lgr := zerolog.New(multiWriter).With().Timestamp().Logger()
+	lgr := zerolog.New(multiWriter).With().
+		Str("service_name", serviceName).Timestamp().Logger()
 
 	return &AppLogger{lgr: lgr}
 }

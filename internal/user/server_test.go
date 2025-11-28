@@ -14,7 +14,7 @@ import (
 
 func TestGetUser_Unit(t *testing.T) {
 	cfg := config.GetConfig()
-	lgr := applog.NewAppLogger(cfg)
+	lgr := applog.NewAppLogger(cfg, "test_user")
 	server := NewServer()
 	ctx := request.WithLogger(context.Background(), lgr)
 

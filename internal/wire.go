@@ -7,7 +7,7 @@ import (
 	"github.com/google/wire"
 )
 
-func InitializeUserService() (*UserService, error) {
+func InitializeUserService(serviceName string) (*UserService, error) {
 	wire.Build(UserServiceSet)
 	return nil, nil
 }
