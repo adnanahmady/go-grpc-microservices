@@ -7,9 +7,10 @@ import (
 )
 
 type Config struct {
-	App  AppConfig  `mapstructure:"app"`
-	User UserConfig `mapstructure:"user"`
-	Log  LogConfig  `mapstructure:"log"`
+	App       AppConfig       `mapstructure:"app"`
+	User      UserConfig      `mapstructure:"user"`
+	Inventory InventoryConfig `mapstructure:"inventory"`
+	Log       LogConfig       `mapstructure:"log"`
 }
 
 type AppConfig struct {
@@ -17,6 +18,11 @@ type AppConfig struct {
 }
 
 type UserConfig struct {
+	Host string `mapstructure:"host"`
+	Port int    `mapstructure:"port"`
+}
+
+type InventoryConfig struct {
 	Host string `mapstructure:"host"`
 	Port int    `mapstructure:"port"`
 }
@@ -37,6 +43,10 @@ func mapToStructs() {
 	// User config
 	loadEnvToStruct("user.host", "USER_HOST")
 	loadEnvToStruct("user.port", "USER_PORT")
+
+	// Inventory config
+	loadEnvToStruct("inventory.host", "INVENTORY_HOST")
+	loadEnvToStruct("inventory.port", "INVENTORY_PORT")
 
 	// Log config
 	loadEnvToStruct("log.level", "LOG_LEVEL")

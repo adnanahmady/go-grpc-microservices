@@ -1,24 +1,21 @@
-x-service: &app_service
-  build:
-    context: .docker
-    dockerfile: Dockerfile
-  stdin_open: true
-  tty: true
-  environment:
-    GO_FLAGS: "-mod=vendor"
-  volumes:
-    - .:/app
-  working_dir: /app
-
 services:
   app:
     image: app:latest
-    <<: *app_service
+    build:
+      context: .docker
+      dockerfile: Dockerfile
+    stdin_open: true
+    tty: true
+    environment:
+      GO_FLAGS: "-mod=vendor"
+    volumes:
+      - .:/app
+    working_dir: /app
     ports:
       - "${USER_PORT:-5000}:${USER_PORT:-5000}"
       - "${INVENTORY_PORT:-5001}:${INVENTORY_PORT:-5001}"
       - "${ORDER_PORT:-5002}:${ORDER_PORT:-5002}"
-  
+
   user-service:
     build:
       context: .
@@ -32,6 +29,23 @@ services:
     environment:
       - USER_HOST=${USER_SERVICE_HOST:-}
       - USER_PORT=${USER_SERVICE_PORT:-50051}
+    networks:
+      - microservices
+    restart: always
+
+  inventory-service:
+    build:
+      context: .
+      dockerfile: .docker/prod.Dockerfile
+      args:
+        SERVICE_NAME: inventoryservice
+    env_file:
+      - .env
+    ports:
+      - "${INVENTORY_SERVICE_PORT:-50052}:${INVENTORY_SERVICE_PORT:-50052}"
+    environment:
+      - INVENTORY_HOST=${INVENTORY_SERVICE_HOST:-}
+      - INVENTORY_PORT=${INVENTORY_SERVICE_PORT:-50052}
     networks:
       - microservices
     restart: always

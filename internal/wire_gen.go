@@ -8,6 +8,7 @@ package internal
 
 import (
 	"github.com/adnanahmady/go-grpc-microservices/config"
+	"github.com/adnanahmady/go-grpc-microservices/internal/inventory"
 	"github.com/adnanahmady/go-grpc-microservices/internal/user"
 	"github.com/adnanahmady/go-grpc-microservices/pkg/applog"
 	"github.com/adnanahmady/go-grpc-microservices/pkg/request"
@@ -27,4 +28,18 @@ func InitializeUserService(serviceName string) (*UserService, error) {
 		Middlewares: middlewares,
 	}
 	return userService, nil
+}
+
+func InitializeInventoryService(serviceName string) (*InventoryService, error) {
+	configConfig := config.GetConfig()
+	appLogger := applog.NewAppLogger(configConfig, serviceName)
+	server := inventory.NewServer()
+	middlewares := request.NewMiddlewares(appLogger, configConfig)
+	inventoryService := &InventoryService{
+		Config:      configConfig,
+		Logger:      appLogger,
+		Server:      server,
+		Middlewares: middlewares,
+	}
+	return inventoryService, nil
 }

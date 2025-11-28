@@ -21,6 +21,9 @@ ps:
 run.user: tidy wire
 	@${MAKE} shell run="go run ./cmd/userservice/main.go"
 
+run.inventory: tidy wire
+	@${MAKE} shell run="go run ./cmd/inventoryservice/main.go"
+
 log:
 	@docker compose logs -f $(call default,$(service),app)
 

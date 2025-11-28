@@ -29,6 +29,7 @@ var _ Logger = (*AppLogger)(nil)
 type AppLogger struct {
 	lgr zerolog.Logger
 }
+
 func NewAppLogger(cfg *config.Config, serviceName string) *AppLogger {
 	zerolog.TimeFieldFormat = zerolog.TimeFormatUnix
 
