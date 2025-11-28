@@ -12,6 +12,8 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 	"google.golang.org/grpc"
+	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/status"
 )
 
 var _ proto.UserServiceClient = (*spyUserClient)(nil)
@@ -147,7 +149,15 @@ func TestCreateOrder_Unit(t *testing.T) {
 		require.Empty(t, resp)
 
 		// Assert
-		assert.ErrorIs(t, err, ErrOrderingUserNotFound)
+		st, ok := status.FromError(err)
+		require.Truef(t, ok, "error should be a gRPC status error")
+		assert.Equal(t, codes.InvalidArgument, st.Code())
+		assert.Equal(t, st.Message(), ErrOrderingInvalidUser.Error())
+		require.Len(t, st.Details(), 1, "status should have one error detail")
+		detail, ok := st.Details()[0].(*proto.ErrorDetail)
+		require.Truef(t, ok, "detail should be of type ErrorDetail")
+		assert.Equal(t, "USER_NOT_FOUND", detail.ErrorCode)
+		assert.Contains(t, detail.Message, ErrOrderingUserNotFound.Error())
 	})
 
 	t.Run("given order when product quantity is zero then should return error", func(t *testing.T) {
@@ -160,7 +170,10 @@ func TestCreateOrder_Unit(t *testing.T) {
 		require.Empty(t, resp)
 
 		// Assert
-		assert.ErrorIs(t, err, ErrProductIsSoldOut)
+		st, ok := status.FromError(err)
+		require.Truef(t, ok, "error should be a gRPC status error")
+		assert.Equal(t, codes.FailedPrecondition, st.Code())
+		assert.Contains(t, st.Message(), ErrProductIsSoldOut.Error())
 	})
 
 	t.Run("given order when product doesnt exist then should return error", func(t *testing.T) {
@@ -173,7 +186,15 @@ func TestCreateOrder_Unit(t *testing.T) {
 		require.Empty(t, resp)
 
 		// Assert
-		assert.ErrorIs(t, err, ErrOrderingProductNotFound)
+		st, ok := status.FromError(err)
+		require.Truef(t, ok, "error should be a gRPC status error")
+		assert.Equal(t, codes.InvalidArgument, st.Code())
+		assert.Equal(t, st.Message(), ErrOrderingInvalidProduct.Error())
+		require.Len(t, st.Details(), 1, "status should have one error detail")
+		detail, ok := st.Details()[0].(*proto.ErrorDetail)
+		require.Truef(t, ok, "detail should be of type ErrorDetail")
+		assert.Equal(t, "PRODUCT_NOT_FOUND", detail.ErrorCode)
+		assert.Contains(t, detail.Message, ErrOrderingProductNotFound.Error())
 	})
 
 	t.Run("given order when created then should return the order", func(t *testing.T) {

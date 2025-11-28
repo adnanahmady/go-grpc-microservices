@@ -1,4 +1,4 @@
-package user
+package inventory
 
 import (
 	"context"
@@ -20,17 +20,17 @@ import (
 	"google.golang.org/grpc/test/bufconn"
 )
 
-func setupTestServer(t *testing.T) proto.UserServiceClient {
+func setupTestServer(t *testing.T) proto.InventoryServiceClient {
 	listener := bufconn.Listen(1024 * 1024)
 	t.Cleanup(func() { listener.Close() })
 	cfg := config.GetConfig()
-	lgr := applog.NewAppLogger(cfg, "test_user")
+	lgr := applog.NewAppLogger(cfg, "test_inventory")
 
 	m := request.NewMiddlewares(lgr, cfg)
 	srv := grpc.NewServer(grpc.UnaryInterceptor(m.UnaryServerLoggingInterceptor()))
 	t.Cleanup(func() { srv.Stop() })
 
-	proto.RegisterUserServiceServer(srv, NewServer())
+	proto.RegisterInventoryServiceServer(srv, NewServer())
 	go func() {
 		if err := srv.Serve(listener); err != nil {
 			log.Fatalf("Server exited with error: %v", err)
@@ -49,21 +49,21 @@ func setupTestServer(t *testing.T) proto.UserServiceClient {
 	require.NoError(t, err)
 	t.Cleanup(func() { conn.Close() })
 
-	return proto.NewUserServiceClient(conn)
+	return proto.NewInventoryServiceClient(conn)
 }
 
-func TestUserService_Integration(t *testing.T) {
+func TestInventoryService_Integration(t *testing.T) {
 	client := setupTestServer(t)
 
 	ctx, cancel := context.WithTimeout(context.Background(), 1*time.Second)
 	defer cancel()
 
-	t.Run("given id when user exists then should return it", func(t *testing.T) {
+	t.Run("given id when product exists then should return it", func(t *testing.T) {
 		// Arrange
-		req := &proto.GetUserRequest{Id: "2"}
+		req := &proto.GetProductRequest{Id: "2"}
 
 		// Act
-		resp, err := client.GetUser(ctx, req)
+		resp, err := client.GetProduct(ctx, req)
 		require.NoError(t, err)
 		require.NotNil(t, resp)
 
@@ -72,22 +72,22 @@ func TestUserService_Integration(t *testing.T) {
 		assert.NotEmpty(t, resp.Name)
 	})
 
-	t.Run("given id when user doesnt exist then should return error", func(t *testing.T) {
+	t.Run("given id when product doesnt exist then should return error", func(t *testing.T) {
 		// Arrange
-		req := &proto.GetUserRequest{Id: "999"}
+		req := &proto.GetProductRequest{Id: "999"}
 
 		// Act
-		resp, err := client.GetUser(ctx, req)
+		resp, err := client.GetProduct(ctx, req)
 		require.Empty(t, resp)
 
 		// Assert
 		st, ok := status.FromError(err)
 		require.Truef(t, ok, "error should be a gRPC status error")
 		assert.Equal(t, codes.NotFound, st.Code())
-		assert.Equal(t, st.Message(), ErrUserNotFound.Error())
+		assert.Equal(t, st.Message(), ErrProductNotFound.Error())
 		require.Len(t, st.Details(), 1, "status should have one error detail")
 		detail, ok := st.Details()[0].(*proto.ErrorDetail)
 		require.Truef(t, ok, "detail should be of type ErrorDetail")
-		assert.Equal(t, "USER_NOT_FOUND", detail.ErrorCode)
+		assert.Equal(t, "PRODUCT_NOT_FOUND", detail.ErrorCode)
 	})
 }

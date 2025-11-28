@@ -9,7 +9,9 @@ import (
 	"github.com/adnanahmady/go-grpc-microservices/pkg/request"
 	"github.com/google/uuid"
 	"google.golang.org/grpc"
+	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/credentials/insecure"
+	"google.golang.org/grpc/status"
 )
 
 func ConnectToUserService(cfg *config.Config) (proto.UserServiceClient, error) {
@@ -58,17 +60,20 @@ func (s *Server) CreateOrder(
 	_, err := s.userClient.GetUser(ctx, &proto.GetUserRequest{Id: req.UserId})
 	if err != nil {
 		lgr.Error("failet to find user", err)
-		return nil, fmt.Errorf("%w: %s", ErrOrderingUserNotFound, req.UserId)
+		return produceUserError(req)
 	}
 
 	pr := &proto.GetProductRequest{Id: req.ProductId}
 	product, err := s.inventoryClient.GetProduct(ctx, pr)
 	if err != nil {
 		lgr.Error("failed to find product", err)
-		return nil, fmt.Errorf("%w: %s", ErrOrderingProductNotFound, req.ProductId)
+		return produceProductError(req)
 	}
 	if product.Quantity < 1 {
-		return nil, fmt.Errorf("%w: %s", ErrProductIsSoldOut, req.ProductId)
+		return nil, status.Errorf(
+			codes.FailedPrecondition,
+			"%s: %s", ErrProductIsSoldOut.Error(), req.ProductId,
+		)
 	}
 
 	newOrder := &proto.Order{
@@ -80,4 +85,34 @@ func (s *Server) CreateOrder(
 
 	lgr.Info("Order created successfully: %v", newOrder.Id)
 	return newOrder, nil
+}
+
+func produceUserError(req *proto.CreateOrderRequest) (*proto.Order, error) {
+	st := status.New(codes.InvalidArgument, ErrOrderingInvalidUser.Error())
+
+	detail := &proto.ErrorDetail{
+		ErrorCode: "USER_NOT_FOUND",
+		Message:   fmt.Sprintf("%v: %s", ErrOrderingUserNotFound, req.UserId),
+	}
+	detailedSt, err := st.WithDetails(detail)
+	if err != nil {
+		return nil, st.Err()
+	}
+
+	return nil, detailedSt.Err()
+}
+
+func produceProductError(req *proto.CreateOrderRequest) (*proto.Order, error) {
+	st := status.New(codes.InvalidArgument, ErrOrderingInvalidProduct.Error())
+
+	detail := &proto.ErrorDetail{
+		ErrorCode: "PRODUCT_NOT_FOUND",
+		Message:   fmt.Sprintf("%v: %s", ErrOrderingProductNotFound, req.ProductId),
+	}
+	detaildSt, err := st.WithDetails(detail)
+	if err != nil {
+		return nil, st.Err()
+	}
+
+	return nil, detaildSt.Err()
 }

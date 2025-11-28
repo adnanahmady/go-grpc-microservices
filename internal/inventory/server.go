@@ -5,6 +5,8 @@ import (
 	"fmt"
 
 	"github.com/adnanahmady/go-grpc-microservices/pkg/proto"
+	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/status"
 )
 
 var products = map[string]*proto.Product{
@@ -21,7 +23,7 @@ var products = map[string]*proto.Product{
 	"3": {
 		Id:       "3",
 		Name:     "Product 3",
-		Quantity: 1,
+		Quantity: 0,
 	},
 }
 
@@ -42,5 +44,15 @@ func (s *Server) GetProduct(
 	if p, ok := products[req.Id]; ok {
 		return p, nil
 	}
-	return nil, fmt.Errorf("%w: %v", ErrProductNotFound, req.Id)
+
+	st := status.New(codes.NotFound, ErrProductNotFound.Error())
+	detail := &proto.ErrorDetail{
+		ErrorCode: "PRODUCT_NOT_FOUND",
+		Message: fmt.Sprintf("%s: %s", ErrProductNotFound, req.Id),
+	}
+	detailedSt, err := st.WithDetails(detail)
+	if err != nil {
+		return nil, st.Err()
+	}
+	return nil, detailedSt.Err()
 }

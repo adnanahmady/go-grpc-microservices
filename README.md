@@ -50,8 +50,9 @@ You can take a brief view of the project strucutre in here.
 ```shell
 .
 ├── .assets # readme file assets
-│   ├── create-order-not-found-error.png
+│   ├── create-order-invalid-product-error.png
 │   ├── create-order.png
+│   ├── create-order-sold-out-error.png
 │   ├── get-product-not-found-error.png
 │   ├── get-product.png
 │   ├── get-user-not-found-error.png
@@ -80,6 +81,7 @@ You can take a brief view of the project strucutre in here.
 │   ├── inventory
 │   │   ├── errors.go
 │   │   ├── server.go
+│   │   ├── server_integration_test.go
 │   │   └── server_test.go
 │   ├── order
 │   │   ├── errors.go
@@ -142,6 +144,10 @@ You can see a brief view of the services using pictures.
 
 ![Create Order](.assets/create-order.png)
 
-#### Not Found Product For The Order
+#### Not Found Product For The Order (Invalid Product)
 
-![Create Order Product Not Found](.assets/create-order-not-found-error.png)
+![Create Order Product Not Found](.assets/create-order-invalid-product-error.png)
+
+#### Sold Out Product
+
+![Product Sold Out](.assets/create-order-sold-out-error.png)

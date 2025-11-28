@@ -4,6 +4,11 @@ package proto;
 
 option go_package = "github.com/adnanahmady/go-grpc-microservices/pkg/proto";
 
+message ErrorDetail {
+    string errorCode = 1;
+    string message = 2;
+}
+
 // --- User Service ---
 
 message User {

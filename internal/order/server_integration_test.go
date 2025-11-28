@@ -13,6 +13,7 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 	"google.golang.org/grpc"
+	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/credentials/insecure"
 	"google.golang.org/grpc/status"
 	"google.golang.org/grpc/test/bufconn"
@@ -63,7 +64,13 @@ func TestOrderService_Integration(t *testing.T) {
 		require.Empty(t, resp)
 
 		// Assert
-		assert.ErrorIs(t, err, status.Error(2, "ordering user not found: 100"))
+		st, ok := status.FromError(err)
+		require.Truef(t, ok, "error should be a gRPC status error")
+		assert.Equal(t, codes.InvalidArgument, st.Code())
+		assert.Contains(t, "user id is invalid", st.Message())
+		detail, ok := st.Details()[0].(*proto.ErrorDetail)
+		require.Truef(t, ok, "status should have one error detail")
+		assert.Contains(t, "ordering user not found: 100", detail.Message)
 	})
 
 	t.Run("given order when product doesnt exist then should return error", func(t *testing.T) {
@@ -75,8 +82,15 @@ func TestOrderService_Integration(t *testing.T) {
 		require.Error(t, err)
 		require.Empty(t, resp)
 
+
 		// Assert
-		assert.ErrorIs(t, err, status.Error(2, "ordering product not found: 100"))
+		st, ok := status.FromError(err)
+		require.Truef(t, ok, "error should be a gRPC status error")
+		assert.Equal(t, codes.InvalidArgument, st.Code())
+		assert.Contains(t, "product id is invalid", st.Message())
+		detail, ok := st.Details()[0].(*proto.ErrorDetail)
+		require.Truef(t, ok, "status should have one error detail")
+		assert.Contains(t, "ordering product not found: 100", detail.Message)
 	})
 
 	t.Run("given order when created then should return the order", func(t *testing.T) {

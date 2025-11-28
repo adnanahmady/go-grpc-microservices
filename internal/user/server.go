@@ -5,6 +5,8 @@ import (
 	"fmt"
 
 	"github.com/adnanahmady/go-grpc-microservices/pkg/proto"
+	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/status"
 )
 
 var users = map[string]*proto.User{
@@ -35,5 +37,15 @@ func (s *Server) GetUser(
 	if user, ok := users[req.Id]; ok {
 		return user, nil
 	}
-	return nil, fmt.Errorf("%w: %v", ErrUserNotFound, req.Id)
+
+	st := status.New(codes.NotFound, ErrUserNotFound.Error())
+	detail := &proto.ErrorDetail{
+		ErrorCode: "USER_NOT_FOUND",
+		Message: fmt.Sprintf("%s: %s", ErrUserNotFound, req.Id),
+	}
+	detailedSt, err := st.WithDetails(detail)
+	if err != nil {
+		return nil, st.Err()
+	}
+	return nil, detailedSt.Err()
 }
