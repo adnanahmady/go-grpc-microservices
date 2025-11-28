@@ -41,7 +41,7 @@ func (s *Server) GetUser(
 	st := status.New(codes.NotFound, ErrUserNotFound.Error())
 	detail := &proto.ErrorDetail{
 		ErrorCode: "USER_NOT_FOUND",
-		Message: fmt.Sprintf("%s: %s", ErrUserNotFound, req.Id),
+		Message:   fmt.Sprintf("%s: %s", ErrUserNotFound, req.Id),
 	}
 	detailedSt, err := st.WithDetails(detail)
 	if err != nil {

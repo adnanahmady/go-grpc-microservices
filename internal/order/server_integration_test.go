@@ -82,7 +82,6 @@ func TestOrderService_Integration(t *testing.T) {
 		require.Error(t, err)
 		require.Empty(t, resp)
 
-
 		// Assert
 		st, ok := status.FromError(err)
 		require.Truef(t, ok, "error should be a gRPC status error")

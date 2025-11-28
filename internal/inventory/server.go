@@ -48,7 +48,7 @@ func (s *Server) GetProduct(
 	st := status.New(codes.NotFound, ErrProductNotFound.Error())
 	detail := &proto.ErrorDetail{
 		ErrorCode: "PRODUCT_NOT_FOUND",
-		Message: fmt.Sprintf("%s: %s", ErrProductNotFound, req.Id),
+		Message:   fmt.Sprintf("%s: %s", ErrProductNotFound, req.Id),
 	}
 	detailedSt, err := st.WithDetails(detail)
 	if err != nil {
