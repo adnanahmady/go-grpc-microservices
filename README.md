@@ -25,14 +25,22 @@ up and running as it should be.
 
 ### Bring up the application
 
-you can up the docker environment using this command.
+You can up the docker environment using this command.
 by running this command a built version will be created
-for the `user-service` and you can connect to it though
-the port `50051` using grpc.
+for each service, and you can connect to the services through
+the ports using gRPC.
 
 ```shell
 make up
 ```
+
+Default service ports are as following:
+
+Service|Port
+---|---
+User|50051
+Inventory|50052
+Order|50053
 
 ### Release the docker resources
 
