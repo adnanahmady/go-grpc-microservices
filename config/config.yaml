@@ -9,6 +9,19 @@ inventory: # on what host and port the inventory service should run
   host: # host to connect to inventory service
   port: 5001 # port to connect to inventory service
 
+order: # on what host and port the order service should run
+  host: # host to connect to order service
+  port: 5002 # port to connect to order service
+
+gateway: # call address to other services and external once
+  user:
+    host: user-service # the docker alias to connect to user service internally
+    port: 50051 # port to connect to user service
+
+  inventory:
+    host: inventory-service # the docker alias to connect to inventory service internally
+    port: 50052 # port to connect to inventory service
+
 log:
   level: info # debug, info, warning, error, fatal, panic
   dir: logs # directory to store logs

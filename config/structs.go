@@ -10,6 +10,8 @@ type Config struct {
 	App       AppConfig       `mapstructure:"app"`
 	User      UserConfig      `mapstructure:"user"`
 	Inventory InventoryConfig `mapstructure:"inventory"`
+	Order     OrderConfig     `mapstructure:"order"`
+	Gateway   GatewayConfig   `mapstructure:"gateway"`
 	Log       LogConfig       `mapstructure:"log"`
 }
 
@@ -25,6 +27,21 @@ type UserConfig struct {
 type InventoryConfig struct {
 	Host string `mapstructure:"host"`
 	Port int    `mapstructure:"port"`
+}
+
+type OrderConfig struct {
+	Host string `mapstrucutre:"host"`
+	Port int    `mapstrucutre:"port"`
+}
+
+type GatewayConfig struct {
+	User      ServiceConfig `mapstructure:"user"`
+	Inventory ServiceConfig `mapstructure:"inventory"`
+}
+
+type ServiceConfig struct {
+	Host string `mapstrucutre:"host"`
+	Port int    `mapstrucutre:"port"`
 }
 
 type LogConfig struct {
@@ -47,6 +64,17 @@ func mapToStructs() {
 	// Inventory config
 	loadEnvToStruct("inventory.host", "INVENTORY_HOST")
 	loadEnvToStruct("inventory.port", "INVENTORY_PORT")
+
+	// Order config
+	loadEnvToStruct("order.host", "ORDER_HOST")
+	loadEnvToStruct("order.port", "ORDER_PORT")
+
+	// Gateway config
+	loadEnvToStruct("gateway.user.host", "GATEWAY_USER_HOST")
+	loadEnvToStruct("gateway.user.port", "GATEWAY_USER_PORT")
+
+	loadEnvToStruct("gateway.inventory.host", "GATEWAY_INVENTORY_HOST")
+	loadEnvToStruct("gateway.inventory.port", "GATEWAY_INVENTORY_PORT")
 
 	// Log config
 	loadEnvToStruct("log.level", "LOG_LEVEL")

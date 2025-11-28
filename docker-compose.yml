@@ -50,6 +50,26 @@ services:
       - microservices
     restart: always
 
+  order-service:
+    build:
+      context: .
+      dockerfile: .docker/prod.Dockerfile
+      args:
+        SERVICE_NAME: orderservice
+    env_file:
+      - .env
+    ports:
+      - "${ORDER_SERVICE_PORT:-50053}:${ORDER_SERVICE_PORT:-50053}"
+    environment:
+      - ORDER_HOST=${ORDER_SERVICE_HOST:-}
+      - ORDER_PORT=${ORDER_SERVICE_PORT:-50053}
+    networks:
+      - microservices
+    restart: always
+    links:
+      - user-service
+      - inventory-service
+
   adminer:
     image: adminer:4.8.1
     restart: always

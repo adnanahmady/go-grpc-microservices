@@ -3,6 +3,7 @@ package internal
 import (
 	"github.com/adnanahmady/go-grpc-microservices/config"
 	"github.com/adnanahmady/go-grpc-microservices/internal/inventory"
+	"github.com/adnanahmady/go-grpc-microservices/internal/order"
 	"github.com/adnanahmady/go-grpc-microservices/internal/user"
 	"github.com/adnanahmady/go-grpc-microservices/pkg/applog"
 	"github.com/adnanahmady/go-grpc-microservices/pkg/proto"
@@ -52,3 +53,25 @@ var InventoryServiceSet = wire.NewSet(
 	wire.Struct(new(InventoryService), "*"),
 )
 
+type OrderService struct {
+	Config      *config.Config
+	Logger      applog.Logger
+	Server      *order.Server
+	Middlewares *request.Middlewares
+}
+
+var OrderServiceSet = wire.NewSet(
+	config.GetConfig,
+
+	applog.NewAppLogger,
+	wire.Bind(new(applog.Logger), new(*applog.AppLogger)),
+
+	order.ConnectToUserService,
+	order.ConnectToInventoryService,
+	order.NewServer,
+	wire.Bind(new(proto.OrderServiceServer), new(*order.Server)),
+
+	request.NewMiddlewares,
+
+	wire.Struct(new(OrderService), "*"),
+)
