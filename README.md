@@ -15,6 +15,7 @@ communication between the tree microservices.
     * [Bring up the application](#bring-up-the-application)
     * [Bring down the application](#release-the-docker-resources)
 * [Project Structure](#project-structure)
+* [Services overview](#services-overview)
 
 ## Commands
 
@@ -48,6 +49,13 @@ You can take a brief view of the project strucutre in here.
 
 ```shell
 .
+├── .assets # readme file assets
+│   ├── create-order-not-found-error.png
+│   ├── create-order.png
+│   ├── get-product-not-found-error.png
+│   ├── get-product.png
+│   ├── get-user-not-found-error.png
+│   └── get-user.png
 ├── cmd # applications
 │   ├── inventoryservice
 │   │   └── main.go
@@ -109,3 +117,31 @@ You can take a brief view of the project strucutre in here.
 
 17 directories, 42 files
 ```
+
+# Services Overview
+
+You can see a brief view of the services using pictures.
+
+### Get User By ID
+
+![Get User](.assets/get-user.png)
+
+#### Not Found User
+
+![User Not Found](.assets/get-user-not-found-error.png)
+
+### Get Product By ID
+
+![Get Product](.assets/get-product.png)
+
+#### Not Found Product
+
+![Product Not Found](.assets/get-product-not-found-error.png)
+
+### Create Order
+
+![Create Order](.assets/create-order.png)
+
+#### Not Found Product For The Order
+
+![Create Order Product Not Found](.assets/create-order-not-found-error.png)
