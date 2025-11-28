@@ -18,6 +18,11 @@ donw:
 ps:
 	@docker compose ps
 
+proto:
+	@${MAKE} shell run="protoc --go_out=. --go_opt=paths=source_relative \
+		--go-grpc_out=. --go-grpc_opt=paths=source_relative \
+		pkg/proto/services.proto"
+
 run.user: tidy wire
 	@${MAKE} shell run="go run ./cmd/userservice/main.go"
 
