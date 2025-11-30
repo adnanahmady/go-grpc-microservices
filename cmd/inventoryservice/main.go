@@ -10,7 +10,7 @@ import (
 	"sync"
 	"syscall"
 
-	"github.com/adnanahmady/go-grpc-microservices/internal"
+	"github.com/adnanahmady/go-grpc-microservices/internal/inventory"
 	"github.com/adnanahmady/go-grpc-microservices/pkg/proto"
 	"google.golang.org/grpc"
 )
@@ -23,7 +23,7 @@ func main() {
 	defer stop()
 	wg := sync.WaitGroup{}
 
-	inventoryService, err := internal.InitializeInventoryService("inventory")
+	inventoryService, err := inventory.InitService("inventory")
 	if err != nil {
 		log.Fatalf("failed to initialize inventory service: %v", err)
 	}

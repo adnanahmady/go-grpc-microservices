@@ -10,7 +10,7 @@ import (
 	"sync"
 	"syscall"
 
-	"github.com/adnanahmady/go-grpc-microservices/internal"
+	"github.com/adnanahmady/go-grpc-microservices/internal/user"
 	"github.com/adnanahmady/go-grpc-microservices/pkg/proto"
 	"google.golang.org/grpc"
 )
@@ -21,7 +21,7 @@ func main() {
 	defer stop()
 	wg := sync.WaitGroup{}
 
-	userService, err := internal.InitializeUserService("user")
+	userService, err := user.InitService("user")
 	if err != nil {
 		log.Fatalf("failed to initialize user service: %v", err)
 	}

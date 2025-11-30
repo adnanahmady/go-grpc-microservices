@@ -10,7 +10,7 @@ import (
 	"sync"
 	"syscall"
 
-	"github.com/adnanahmady/go-grpc-microservices/internal"
+	"github.com/adnanahmady/go-grpc-microservices/internal/order"
 	"github.com/adnanahmady/go-grpc-microservices/pkg/proto"
 	"google.golang.org/grpc"
 )
@@ -23,7 +23,7 @@ func main() {
 	defer stop()
 	wg := sync.WaitGroup{}
 
-	orderService, err := internal.InitializeOrderService("order")
+	orderService, err := order.InitService("order")
 	if err != nil {
 		log.Fatalf("failed to initilize order service: %v", err)
 	}
