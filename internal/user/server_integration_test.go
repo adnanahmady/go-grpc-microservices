@@ -7,8 +7,6 @@ import (
 	"testing"
 	"time"
 
-	"github.com/adnanahmady/go-grpc-microservices/config"
-	"github.com/adnanahmady/go-grpc-microservices/pkg/applog"
 	"github.com/adnanahmady/go-grpc-microservices/pkg/proto"
 	"github.com/adnanahmady/go-grpc-microservices/pkg/request"
 	"github.com/stretchr/testify/assert"
@@ -23,11 +21,12 @@ import (
 func setupTestServer(t *testing.T) proto.UserServiceClient {
 	listener := bufconn.Listen(1024 * 1024)
 	t.Cleanup(func() { listener.Close() })
-	cfg := config.GetConfig()
-	lgr := applog.NewAppLogger(cfg, "test_user")
 
-	m := request.NewMiddlewares(lgr, cfg)
-	srv := grpc.NewServer(grpc.UnaryInterceptor(m.UnaryServerLoggingInterceptor()))
+	ps, err := InitService("test_user")
+	require.NoError(t, err)
+
+	logInterceptor := ps.Middlewares.UnaryServerLoggingInterceptor()
+	srv := grpc.NewServer(grpc.UnaryInterceptor(logInterceptor))
 	t.Cleanup(func() { srv.Stop() })
 
 	proto.RegisterUserServiceServer(srv, NewServer())
@@ -37,7 +36,7 @@ func setupTestServer(t *testing.T) proto.UserServiceClient {
 		}
 	}()
 
-	ctx := request.WithLogger(context.Background(), lgr)
+	ctx := request.WithLogger(context.Background(), ps.Logger)
 	ctx, cancel := context.WithCancel(ctx)
 	t.Cleanup(cancel)
 	conn, err := grpc.DialContext(ctx, "bufnet",

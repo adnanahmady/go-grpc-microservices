@@ -6,8 +6,6 @@ import (
 	"net"
 	"testing"
 
-	"github.com/adnanahmady/go-grpc-microservices/config"
-	"github.com/adnanahmady/go-grpc-microservices/pkg/applog"
 	"github.com/adnanahmady/go-grpc-microservices/pkg/proto"
 	"github.com/adnanahmady/go-grpc-microservices/pkg/request"
 	"github.com/stretchr/testify/assert"
@@ -23,10 +21,11 @@ func setupOrderServer(t *testing.T) (context.Context, proto.OrderServiceClient) 
 	listener := bufconn.Listen(1024 * 1024)
 	t.Cleanup(func() { listener.Close() })
 
-	cfg := config.GetConfig()
-	lgr := applog.NewAppLogger(cfg, "test_order")
-	m := request.NewMiddlewares(lgr, cfg)
-	srv := grpc.NewServer(grpc.UnaryInterceptor(m.UnaryServerLoggingInterceptor()))
+	ps, err := InitService("test_order")
+	require.NoError(t, err)
+
+	logInterceptor := ps.Middlewares.UnaryServerLoggingInterceptor()
+	srv := grpc.NewServer(grpc.UnaryInterceptor(logInterceptor))
 	t.Cleanup(func() { srv.Stop() })
 
 	proto.RegisterOrderServiceServer(srv, NewServer(&spyUserClient{}, &spyInventoryClient{}))
@@ -36,7 +35,7 @@ func setupOrderServer(t *testing.T) (context.Context, proto.OrderServiceClient) 
 		}
 	}()
 
-	ctx := request.WithLogger(context.Background(), lgr)
+	ctx := request.WithLogger(context.Background(), ps.Logger)
 	ctx, cancel := context.WithCancel(ctx)
 	t.Cleanup(cancel)
 	conn, err := grpc.DialContext(ctx, "bufnet",
