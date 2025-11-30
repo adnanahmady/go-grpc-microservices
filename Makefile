@@ -12,7 +12,7 @@ up:
 build:
 	@docker compose up -d --build
 
-donw:
+down:
 	@docker compose down
 
 ps:
